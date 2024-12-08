@@ -1,0 +1,734 @@
+==================================================
+goal = test
+device = cuda
+device_id = 0
+dataset = MNIST
+num_classes = 10
+model = CNN
+batch_size = 64
+local_learning_rate = 0.01
+learning_rate_decay = False
+learning_rate_decay_gamma = 0.99
+global_rounds = 50
+top_cnt = 100
+local_epochs = 1
+algorithm = FedAvgPruned
+join_ratio = 0.8
+random_join_ratio = False
+num_clients = 20
+prev = 0
+times = 1
+eval_gap = 1
+save_folder_name = items
+auto_break = False
+dlg_eval = False
+dlg_gap = 100
+batch_num_per_client = 2
+num_new_clients = 0
+fine_tuning_epoch_new = 0
+feature_dim = 512
+vocab_size = 32000
+max_len = 200
+client_drop_rate = 0.0
+train_slow_rate = 0.0
+send_slow_rate = 0.0
+time_select = False
+time_threthold = 10000
+beta = 0.0
+lamda = 1.0
+mu = 0.0
+K = 5
+p_learning_rate = 0.01
+M = 5
+itk = 4000
+alphaK = 1.0
+sigma = 1.0
+alpha = 1.0
+plocal_epochs = 1
+tau = 1.0
+fine_tuning_epochs = 10
+dr_learning_rate = 0.0
+L = 1.0
+noise_dim = 512
+generator_learning_rate = 0.005
+hidden_dim = 512
+server_epochs = 1000
+localize_feature_extractor = False
+server_learning_rate = 1.0
+eta = 1.0
+rand_percent = 80
+layer_idx = 2
+mentee_learning_rate = 0.005
+T_start = 0.95
+T_end = 0.98
+momentum = 0.1
+kl_weight = 0.0
+pruning_ratio = 0.75
+pruning_method = magnitude
+pruning_frequency = 5
+==================================================
+
+============= Running time: 0th =============
+Creating server and clients ...
+FedAvgCNN(
+  (conv1): Sequential(
+    (0): Conv2d(1, 32, kernel_size=(5, 5), stride=(1, 1))
+    (1): ReLU(inplace=True)
+    (2): MaxPool2d(kernel_size=(2, 2), stride=(2, 2), padding=0, dilation=1, ceil_mode=False)
+  )
+  (conv2): Sequential(
+    (0): Conv2d(32, 64, kernel_size=(5, 5), stride=(1, 1))
+    (1): ReLU(inplace=True)
+    (2): MaxPool2d(kernel_size=(2, 2), stride=(2, 2), padding=0, dilation=1, ceil_mode=False)
+  )
+  (fc1): Sequential(
+    (0): Linear(in_features=1024, out_features=512, bias=True)
+    (1): ReLU(inplace=True)
+  )
+  (fc): Linear(in_features=512, out_features=10, bias=True)
+)
+
+Join ratio / total clients: 0.8 / 20
+Finished creating server and clients.
+
+-------------Round number: 0-------------
+
+Evaluate global model
+Averaged Train Loss: 2.3125
+Averaged Test Accurancy: 0.0583
+Averaged Test AUC: 0.4299
+Std Test Accurancy: 0.0526
+Std Test AUC: 0.1484
+------------------------- time cost ------------------------- 2.6927080154418945
+
+-------------Round number: 1-------------
+
+Evaluate global model
+Averaged Train Loss: 2.2734
+Averaged Test Accurancy: 0.2621
+Averaged Test AUC: 0.6215
+Std Test Accurancy: 0.2497
+Std Test AUC: 0.2989
+------------------------- time cost ------------------------- 2.43542218208313
+
+-------------Round number: 2-------------
+
+Evaluate global model
+Averaged Train Loss: 2.2163
+Averaged Test Accurancy: 0.3227
+Averaged Test AUC: 0.6196
+Std Test Accurancy: 0.3996
+Std Test AUC: 0.3368
+------------------------- time cost ------------------------- 2.583280324935913
+
+-------------Round number: 3-------------
+
+Evaluate global model
+Averaged Train Loss: 1.9296
+Averaged Test Accurancy: 0.4784
+Averaged Test AUC: 0.8251
+Std Test Accurancy: 0.3341
+Std Test AUC: 0.2107
+------------------------- time cost ------------------------- 2.6046371459960938
+
+-------------Round number: 4-------------
+
+Evaluate global model
+Averaged Train Loss: 1.7728
+Averaged Test Accurancy: 0.6095
+Averaged Test AUC: 0.8089
+Std Test Accurancy: 0.3139
+Std Test AUC: 0.3051
+------------------------- time cost ------------------------- 2.5328476428985596
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 5-------------
+
+Evaluate global model
+Averaged Train Loss: 1.6283
+Averaged Test Accurancy: 0.6219
+Averaged Test AUC: 0.8194
+Std Test Accurancy: 0.3268
+Std Test AUC: 0.2894
+------------------------- time cost ------------------------- 2.261364221572876
+
+-------------Round number: 6-------------
+
+Evaluate global model
+Averaged Train Loss: 1.6554
+Averaged Test Accurancy: 0.4060
+Averaged Test AUC: 0.7954
+Std Test Accurancy: 0.4366
+Std Test AUC: 0.1983
+------------------------- time cost ------------------------- 2.530273675918579
+
+-------------Round number: 7-------------
+
+Evaluate global model
+Averaged Train Loss: 1.3653
+Averaged Test Accurancy: 0.5687
+Averaged Test AUC: 0.8936
+Std Test Accurancy: 0.3169
+Std Test AUC: 0.0969
+------------------------- time cost ------------------------- 2.463827610015869
+
+-------------Round number: 8-------------
+
+Evaluate global model
+Averaged Train Loss: 1.3333
+Averaged Test Accurancy: 0.6286
+Averaged Test AUC: 0.8793
+Std Test Accurancy: 0.3123
+Std Test AUC: 0.1578
+------------------------- time cost ------------------------- 2.323803663253784
+
+-------------Round number: 9-------------
+
+Evaluate global model
+Averaged Train Loss: 1.2334
+Averaged Test Accurancy: 0.6207
+Averaged Test AUC: 0.8962
+Std Test Accurancy: 0.3229
+Std Test AUC: 0.1183
+------------------------- time cost ------------------------- 2.552757501602173
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 10-------------
+
+Evaluate global model
+Averaged Train Loss: 1.1357
+Averaged Test Accurancy: 0.6575
+Averaged Test AUC: 0.9221
+Std Test Accurancy: 0.2261
+Std Test AUC: 0.0624
+------------------------- time cost ------------------------- 2.453313112258911
+
+-------------Round number: 11-------------
+
+Evaluate global model
+Averaged Train Loss: 1.0858
+Averaged Test Accurancy: 0.6567
+Averaged Test AUC: 0.9235
+Std Test Accurancy: 0.2456
+Std Test AUC: 0.0639
+------------------------- time cost ------------------------- 2.409250020980835
+
+-------------Round number: 12-------------
+
+Evaluate global model
+Averaged Train Loss: 1.1023
+Averaged Test Accurancy: 0.6315
+Averaged Test AUC: 0.9100
+Std Test Accurancy: 0.2812
+Std Test AUC: 0.0861
+------------------------- time cost ------------------------- 2.6541190147399902
+
+-------------Round number: 13-------------
+
+Evaluate global model
+Averaged Train Loss: 0.9191
+Averaged Test Accurancy: 0.7484
+Averaged Test AUC: 0.9459
+Std Test Accurancy: 0.1229
+Std Test AUC: 0.0257
+------------------------- time cost ------------------------- 2.598266839981079
+
+-------------Round number: 14-------------
+
+Evaluate global model
+Averaged Train Loss: 0.8855
+Averaged Test Accurancy: 0.7519
+Averaged Test AUC: 0.9457
+Std Test Accurancy: 0.1310
+Std Test AUC: 0.0291
+------------------------- time cost ------------------------- 2.686218023300171
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 15-------------
+
+Evaluate global model
+Averaged Train Loss: 0.8725
+Averaged Test Accurancy: 0.7313
+Averaged Test AUC: 0.9414
+Std Test Accurancy: 0.1743
+Std Test AUC: 0.0397
+------------------------- time cost ------------------------- 2.552473545074463
+
+-------------Round number: 16-------------
+
+Evaluate global model
+Averaged Train Loss: 0.8510
+Averaged Test Accurancy: 0.7363
+Averaged Test AUC: 0.9440
+Std Test Accurancy: 0.1903
+Std Test AUC: 0.0376
+------------------------- time cost ------------------------- 2.6363465785980225
+
+-------------Round number: 17-------------
+
+Evaluate global model
+Averaged Train Loss: 0.8363
+Averaged Test Accurancy: 0.7387
+Averaged Test AUC: 0.9420
+Std Test Accurancy: 0.1794
+Std Test AUC: 0.0431
+------------------------- time cost ------------------------- 2.5169146060943604
+
+-------------Round number: 18-------------
+
+Evaluate global model
+Averaged Train Loss: 0.8503
+Averaged Test Accurancy: 0.7137
+Averaged Test AUC: 0.9380
+Std Test Accurancy: 0.2496
+Std Test AUC: 0.0532
+------------------------- time cost ------------------------- 2.5596444606781006
+
+-------------Round number: 19-------------
+
+Evaluate global model
+Averaged Train Loss: 0.7997
+Averaged Test Accurancy: 0.7432
+Averaged Test AUC: 0.9475
+Std Test Accurancy: 0.1476
+Std Test AUC: 0.0300
+------------------------- time cost ------------------------- 2.6141674518585205
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 20-------------
+
+Evaluate global model
+Averaged Train Loss: 0.7962
+Averaged Test Accurancy: 0.7346
+Averaged Test AUC: 0.9463
+Std Test Accurancy: 0.2163
+Std Test AUC: 0.0390
+------------------------- time cost ------------------------- 2.2507309913635254
+
+-------------Round number: 21-------------
+
+Evaluate global model
+Averaged Train Loss: 0.8772
+Averaged Test Accurancy: 0.6972
+Averaged Test AUC: 0.9346
+Std Test Accurancy: 0.2671
+Std Test AUC: 0.0580
+------------------------- time cost ------------------------- 2.370436668395996
+
+-------------Round number: 22-------------
+
+Evaluate global model
+Averaged Train Loss: 0.7913
+Averaged Test Accurancy: 0.7367
+Averaged Test AUC: 0.9427
+Std Test Accurancy: 0.2370
+Std Test AUC: 0.0559
+------------------------- time cost ------------------------- 2.6717464923858643
+
+-------------Round number: 23-------------
+
+Evaluate global model
+Averaged Train Loss: 0.7151
+Averaged Test Accurancy: 0.7806
+Averaged Test AUC: 0.9514
+Std Test Accurancy: 0.1322
+Std Test AUC: 0.0297
+------------------------- time cost ------------------------- 2.4992032051086426
+
+-------------Round number: 24-------------
+
+Evaluate global model
+Averaged Train Loss: 0.7088
+Averaged Test Accurancy: 0.7848
+Averaged Test AUC: 0.9536
+Std Test Accurancy: 0.0809
+Std Test AUC: 0.0197
+------------------------- time cost ------------------------- 2.44620943069458
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 25-------------
+
+Evaluate global model
+Averaged Train Loss: 0.7839
+Averaged Test Accurancy: 0.7297
+Averaged Test AUC: 0.9432
+Std Test Accurancy: 0.2453
+Std Test AUC: 0.0534
+------------------------- time cost ------------------------- 2.6099047660827637
+
+-------------Round number: 26-------------
+
+Evaluate global model
+Averaged Train Loss: 0.6644
+Averaged Test Accurancy: 0.8058
+Averaged Test AUC: 0.9569
+Std Test Accurancy: 0.0943
+Std Test AUC: 0.0207
+------------------------- time cost ------------------------- 2.6904711723327637
+
+-------------Round number: 27-------------
+
+Evaluate global model
+Averaged Train Loss: 0.6509
+Averaged Test Accurancy: 0.8035
+Averaged Test AUC: 0.9574
+Std Test Accurancy: 0.1265
+Std Test AUC: 0.0254
+------------------------- time cost ------------------------- 2.580656051635742
+
+-------------Round number: 28-------------
+
+Evaluate global model
+Averaged Train Loss: 0.6601
+Averaged Test Accurancy: 0.7914
+Averaged Test AUC: 0.9565
+Std Test Accurancy: 0.1404
+Std Test AUC: 0.0255
+------------------------- time cost ------------------------- 2.524766445159912
+
+-------------Round number: 29-------------
+
+Evaluate global model
+Averaged Train Loss: 0.7397
+Averaged Test Accurancy: 0.7494
+Averaged Test AUC: 0.9445
+Std Test Accurancy: 0.2775
+Std Test AUC: 0.0664
+------------------------- time cost ------------------------- 2.5418124198913574
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 30-------------
+
+Evaluate global model
+Averaged Train Loss: 0.6775
+Averaged Test Accurancy: 0.7904
+Averaged Test AUC: 0.9546
+Std Test Accurancy: 0.1344
+Std Test AUC: 0.0310
+------------------------- time cost ------------------------- 2.4943718910217285
+
+-------------Round number: 31-------------
+
+Evaluate global model
+Averaged Train Loss: 0.6743
+Averaged Test Accurancy: 0.7702
+Averaged Test AUC: 0.9513
+Std Test Accurancy: 0.2352
+Std Test AUC: 0.0503
+------------------------- time cost ------------------------- 2.600990056991577
+
+-------------Round number: 32-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5993
+Averaged Test Accurancy: 0.8195
+Averaged Test AUC: 0.9613
+Std Test Accurancy: 0.0950
+Std Test AUC: 0.0194
+------------------------- time cost ------------------------- 2.652181625366211
+
+-------------Round number: 33-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5970
+Averaged Test Accurancy: 0.8193
+Averaged Test AUC: 0.9613
+Std Test Accurancy: 0.0904
+Std Test AUC: 0.0207
+------------------------- time cost ------------------------- 2.6486620903015137
+
+-------------Round number: 34-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5831
+Averaged Test Accurancy: 0.8208
+Averaged Test AUC: 0.9622
+Std Test Accurancy: 0.1066
+Std Test AUC: 0.0220
+------------------------- time cost ------------------------- 2.592632532119751
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 35-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5720
+Averaged Test Accurancy: 0.8257
+Averaged Test AUC: 0.9634
+Std Test Accurancy: 0.0835
+Std Test AUC: 0.0166
+------------------------- time cost ------------------------- 2.681703805923462
+
+-------------Round number: 36-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5636
+Averaged Test Accurancy: 0.8276
+Averaged Test AUC: 0.9638
+Std Test Accurancy: 0.0877
+Std Test AUC: 0.0178
+------------------------- time cost ------------------------- 2.67895245552063
+
+-------------Round number: 37-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5526
+Averaged Test Accurancy: 0.8352
+Averaged Test AUC: 0.9648
+Std Test Accurancy: 0.0772
+Std Test AUC: 0.0156
+------------------------- time cost ------------------------- 2.4494805335998535
+
+-------------Round number: 38-------------
+
+Evaluate global model
+Averaged Train Loss: 0.6175
+Averaged Test Accurancy: 0.8036
+Averaged Test AUC: 0.9596
+Std Test Accurancy: 0.1354
+Std Test AUC: 0.0288
+------------------------- time cost ------------------------- 2.729306221008301
+
+-------------Round number: 39-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5496
+Averaged Test Accurancy: 0.8265
+Averaged Test AUC: 0.9642
+Std Test Accurancy: 0.1256
+Std Test AUC: 0.0227
+------------------------- time cost ------------------------- 2.377758264541626
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 40-------------
+
+Evaluate global model
+Averaged Train Loss: 0.6083
+Averaged Test Accurancy: 0.7951
+Averaged Test AUC: 0.9605
+Std Test Accurancy: 0.1515
+Std Test AUC: 0.0277
+------------------------- time cost ------------------------- 2.6303207874298096
+
+-------------Round number: 41-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5429
+Averaged Test Accurancy: 0.8254
+Averaged Test AUC: 0.9645
+Std Test Accurancy: 0.1353
+Std Test AUC: 0.0245
+------------------------- time cost ------------------------- 2.6984052658081055
+
+-------------Round number: 42-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5236
+Averaged Test Accurancy: 0.8377
+Averaged Test AUC: 0.9660
+Std Test Accurancy: 0.1196
+Std Test AUC: 0.0221
+------------------------- time cost ------------------------- 2.597442865371704
+
+-------------Round number: 43-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5136
+Averaged Test Accurancy: 0.8466
+Averaged Test AUC: 0.9675
+Std Test Accurancy: 0.0704
+Std Test AUC: 0.0150
+------------------------- time cost ------------------------- 2.7105987071990967
+
+-------------Round number: 44-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5053
+Averaged Test Accurancy: 0.8498
+Averaged Test AUC: 0.9682
+Std Test Accurancy: 0.0657
+Std Test AUC: 0.0133
+------------------------- time cost ------------------------- 2.589480400085449
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 45-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5108
+Averaged Test Accurancy: 0.8429
+Averaged Test AUC: 0.9672
+Std Test Accurancy: 0.0869
+Std Test AUC: 0.0186
+------------------------- time cost ------------------------- 2.6243233680725098
+
+-------------Round number: 46-------------
+
+Evaluate global model
+Averaged Train Loss: 0.4942
+Averaged Test Accurancy: 0.8519
+Averaged Test AUC: 0.9688
+Std Test Accurancy: 0.0711
+Std Test AUC: 0.0151
+------------------------- time cost ------------------------- 2.575334072113037
+
+-------------Round number: 47-------------
+
+Evaluate global model
+Averaged Train Loss: 0.5001
+Averaged Test Accurancy: 0.8450
+Averaged Test AUC: 0.9673
+Std Test Accurancy: 0.1039
+Std Test AUC: 0.0217
+------------------------- time cost ------------------------- 2.6642494201660156
+
+-------------Round number: 48-------------
+
+Evaluate global model
+Averaged Train Loss: 0.4855
+Averaged Test Accurancy: 0.8531
+Averaged Test AUC: 0.9684
+Std Test Accurancy: 0.0943
+Std Test AUC: 0.0197
+------------------------- time cost ------------------------- 2.569272041320801
+
+-------------Round number: 49-------------
+
+Evaluate global model
+Averaged Train Loss: 0.4790
+Averaged Test Accurancy: 0.8553
+Averaged Test AUC: 0.9699
+Std Test Accurancy: 0.0797
+Std Test AUC: 0.0150
+------------------------- time cost ------------------------- 2.558586835861206
+
+Applying magnitude pruning with ratio 0.75
+
+Before pruning:
+Model size: 2.22 MB
+
+After pruning:
+Model size: 0.56 MB
+Compression ratio: 3.99x
+Memory saved: 1.66 MB
+Current model sparsity: 75.00%
+
+-------------Round number: 50-------------
+
+Evaluate global model
+Averaged Train Loss: 0.4951
+Averaged Test Accurancy: 0.8455
+Averaged Test AUC: 0.9688
+Std Test Accurancy: 0.0772
+Std Test AUC: 0.0144
+------------------------- time cost ------------------------- 2.4312217235565186
+
+Best accuracy.
+0.8553150168504027
+
+Average time cost per round.
+2.5542028045654295
+File path: ../results/MNIST_FedAvgPruned_test_0.h5
+
+Average time cost: 131.12s.
+Length:  51
+std for best accurancy: 0.0
+mean for best accurancy: 0.8553150168504027
+All done!
+
+Storage on cuda:0
+-------------------------------------------------------------------------------
+Total Tensors: 37249046 	Used Memory: 96.09M
+The allocated memory on cuda:0: 112.59M
+Memory differs due to the matrix alignment or invisible gradient buffer tensors
+-------------------------------------------------------------------------------
+
+Total time cost: 131.19s.

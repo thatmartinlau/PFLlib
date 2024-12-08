@@ -18,6 +18,7 @@
 import torch
 import torch.nn.functional as F
 from torch import nn
+import torch.nn.utils.prune as prune
 
 batch_size = 10
 
@@ -197,6 +198,95 @@ class FedAvgCNN(nn.Module):
         out = self.fc(out)
         return out
 
+
+class PrunedFedAvgCNN(nn.Module):
+    def __init__(self, in_features=1, num_classes=10, dim=1024):
+        super().__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_features,
+                        32,
+                        kernel_size=5,
+                        padding=0,
+                        stride=1,
+                        bias=True),
+            nn.ReLU(inplace=True), 
+            nn.MaxPool2d(kernel_size=(2, 2))
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(32,
+                        64,
+                        kernel_size=5,
+                        padding=0,
+                        stride=1,
+                        bias=True),
+            nn.ReLU(inplace=True), 
+            nn.MaxPool2d(kernel_size=(2, 2))
+        )
+        self.fc1 = nn.Sequential(
+            nn.Linear(dim, 512), 
+            nn.ReLU(inplace=True)
+        )
+        self.fc = nn.Linear(512, num_classes)
+
+    def forward(self, x):
+        print(f"Input x shape: {x.shape}")
+        print(f"Conv1 weight shape: {self.conv1[0].weight.shape}")
+        out = self.conv1(x)
+        print(f"After conv1 shape: {out.shape}")
+        
+        print(f"Conv2 weight shape: {self.conv2[0].weight.shape}")
+        out = self.conv2(out)
+        print(f"After conv2 shape: {out.shape}")
+        
+        out = torch.flatten(out, 1)
+        print(f"After flatten shape: {out.shape}")
+        
+        print(f"FC1 weight shape: {self.fc1[0].weight.shape}")
+        out = self.fc1(out)
+        print(f"After fc1 shape: {out.shape}")
+        
+        print(f"FC weight shape: {self.fc.weight.shape}")
+        out = self.fc(out)
+        print(f"Final output shape: {out.shape}")
+        return out
+
+    def apply_pruning(self, amount=0.5):
+        """
+        Apply L1 unstructured pruning to the model's parameters
+        amount: pruning ratio (0 to 1)
+        """
+        # Prune conv layers
+        prune.l1_unstructured(self.conv1[0], name='weight', amount=amount)
+        prune.l1_unstructured(self.conv2[0], name='weight', amount=amount)
+        
+        # Prune fully connected layers
+        prune.l1_unstructured(self.fc1[0], name='weight', amount=amount)
+        prune.l1_unstructured(self.fc, name='weight', amount=amount)
+
+    def make_pruning_permanent(self):
+        """
+        Makes the pruning permanent by removing the pruning reparametrization
+        """
+        for module in [self.conv1[0], self.conv2[0], self.fc1[0], self.fc]:
+            prune.remove(module, 'weight')
+
+    def get_pruning_stats(self):
+        """
+        Returns the sparsity statistics for each layer
+        """
+        stats = {}
+        for name, module in [('conv1', self.conv1[0]), 
+                           ('conv2', self.conv2[0]), 
+                           ('fc1', self.fc1[0]), 
+                           ('fc', self.fc)]:
+            weight = module.weight
+            stats[name] = {
+                'sparsity': float(torch.sum(weight == 0) / weight.numel()),
+                'total_params': weight.numel(),
+                'remaining_params': int(weight.numel() - torch.sum(weight == 0))
+            }
+        return stats
+
 # ====================================================================================================================
 
 # https://github.com/katsura-jp/fedavg.pytorch/blob/master/src/models/mlp.py
@@ -294,45 +384,46 @@ class CifarNet(nn.Module):
 
 # ====================================================================================================================
 
-# cfg = {
-#     'VGG11': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
-#     'VGG13': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
-#     'VGGbatch_size': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
-#     'VGG19': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
-# }
+cfg = {
+    'VGG11': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
+    'VGG13': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
+    'VGGbatch_size': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
+    'VGG19': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+}
 
-# class VGG(nn.Module):
-#     def __init__(self, vgg_name):
-#         super(VGG, self).__init__()
-#         self.features = self._make_layers(cfg[vgg_name])
-#         self.classifier = nn.Sequential(
-#             nn.Linear(512, 512),
-#             nn.ReLU(True),
-#             nn.Linear(512, 512),
-#             nn.ReLU(True),
-#             nn.Linear(512, 10)
-#         )
+class VGG(nn.Module):
+    def __init__(self, vgg_name):
+        super(VGG, self).__init__()
+        self.features = self._make_layers(cfg[vgg_name])
+        self.classifier = nn.Sequential(
+            nn.Linear(512, 512),
+            nn.ReLU(True),
+            nn.Linear(512, 512),
+            nn.ReLU(True),
+            nn.Linear(512, 10)
+        )
+        self.fc = nn.Linear(10, 10)
 
-#     def forward(self, x):
-#         out = self.features(x)
-#         out = out.view(out.size(0), -1)
-#         out = self.classifier(out)
-#         output = F.log_softmax(out, dim=1)
-#         return output
+    def forward(self, x):
+        out = self.features(x)
+        out = out.view(out.size(0), -1)
+        out = self.classifier(out)
+        output = F.log_softmax(out, dim=1)
+        return output
 
-#     def _make_layers(self, cfg):
-#         layers = []
-#         in_channels = 3
-#         for x in cfg:
-#             if x == 'M':
-#                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
-#             else:
-#                 layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
-#                            nn.BatchNorm2d(x),
-#                            nn.ReLU(inplace=True)]
-#                 in_channels = x
-#         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
-#         return nn.Sequential(*layers)
+    def _make_layers(self, cfg):
+        layers = []
+        in_channels = 3
+        for x in cfg:
+            if x == 'M':
+                layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
+            else:
+                layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
+                           nn.BatchNorm2d(x),
+                           nn.ReLU(inplace=True)]
+                in_channels = x
+        layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
+        return nn.Sequential(*layers)
 
 # ====================================================================================================================
 
@@ -361,6 +452,47 @@ class LeNet(nn.Module):
             nn.MaxPool2d(2),
             nn.ReLU(),
         )
+        self.bn = nn.BatchNorm1d(bottleneck_dim, affine=True)
+        self.dropout = nn.Dropout(p=0.5)
+        self.bottleneck = nn.Linear(feature_dim, bottleneck_dim)
+        self.bottleneck.apply(init_weights)
+        self.fc = nn.Linear(bottleneck_dim, num_classes)
+        if iswn == "wn":
+            self.fc = nn.utils.weight_norm(self.fc, name="weight")
+        self.fc.apply(init_weights)
+
+    def forward(self, x):
+        x = self.conv_params(x)
+        x = x.view(x.size(0), -1)
+        x = self.bottleneck(x)
+        x = self.bn(x)
+        x = self.dropout(x)
+        x = self.fc(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+class LeNet_Cifar(nn.Module):
+    def __init__(self, num_classes=10, iswn=None):
+        super(LeNet_Cifar, self).__init__()
+        
+        # Changed input channels from 1 to 3 for CIFAR
+        self.conv_params = nn.Sequential(
+            nn.Conv2d(3, 20, kernel_size=5),  # Changed input channels to 3
+            nn.MaxPool2d(2),
+            nn.ReLU(),
+            nn.Conv2d(20, 50, kernel_size=5),
+            nn.Dropout2d(p=0.5),
+            nn.MaxPool2d(2),
+            nn.ReLU(),
+        )
+        
+        # Calculate new feature_dim for CIFAR (32x32 input)
+        # After conv1 + maxpool: 32->28->14
+        # After conv2 + maxpool: 14->10->5
+        # Final feature map size: 50 channels * 5 * 5 = 1250
+        feature_dim = 50 * 5 * 5  # = 1250
+        bottleneck_dim = 256
+
         self.bn = nn.BatchNorm1d(bottleneck_dim, affine=True)
         self.dropout = nn.Dropout(p=0.5)
         self.bottleneck = nn.Linear(feature_dim, bottleneck_dim)

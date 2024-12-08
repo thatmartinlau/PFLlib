@@ -19,6 +19,7 @@ import time
 from flcore.clients.clientavg import clientAVG
 from flcore.servers.serverbase import Server
 from threading import Thread
+from flcore.trainmodel.models import PrunedFedAvgCNN
 
 
 class FedAvg(Server):

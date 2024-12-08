@@ -1,0 +1,4 @@
+,FedAvg,25% pruning,50% pruning,75% pruning
+averaged_time_per_iteration,2.5161225318908693,2.566264424324036,2.537579298019409,2.5542028045654295
+used_memory_mb,93.31,96.09,96.09,96.09
+total_time_cost_seconds,129.41,131.98,130.19,131.19

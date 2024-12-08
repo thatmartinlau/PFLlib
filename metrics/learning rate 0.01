@@ -1,0 +1,4 @@
+,FedAvg,FedDyn,MOON,PFL-DA
+averaged_time_per_iteration,5.998558807373047,7.25078206539154,11.083537278175355,9.008556904792785
+used_memory_mb,93.31,184.36,139.97,91.51
+total_time_cost_seconds,307.45,370.85,567.47,460.0

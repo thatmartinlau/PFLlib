@@ -23,7 +23,10 @@ import copy
 import time
 import random
 from utils.data_utils import read_client_data
+import torch.nn.utils.prune as prune
 from utils.dlg import DLG
+import torch.nn as nn
+
 
 
 class Server(object):
@@ -50,6 +53,7 @@ class Server(object):
         self.save_folder_name = args.save_folder_name
         self.top_cnt = args.top_cnt
         self.auto_break = args.auto_break
+
 
         self.clients = []
         self.selected_clients = []
@@ -206,6 +210,43 @@ class Server(object):
 
     def load_item(self, item_name):
         return torch.load(os.path.join(self.save_folder_name, "server_" + item_name + ".pt"))
+
+    def apply_pruning(self, amount=0.5):
+        """
+        Apply pruning to the global model.
+        Args:
+            amount (float): Proportion of weights to prune (0 to 1).
+        """
+        print(f"Applying {amount*100}% pruning to the global model...")
+        for name, module in self.global_model.named_modules():
+            if isinstance(module, torch.nn.Linear) or isinstance(module, torch.nn.Conv2d):
+                prune.l1_unstructured(module, name='weight', amount=amount)
+                print(f"Pruned {name}, sparsity: {self.get_sparsity(module)}")
+                print("Conv1 weight shape:", self.global_model.base.conv1[0].weight.shape)
+    
+    def make_pruning_permanent(self):
+        """
+        Permanently remove the pruning reparameterization.
+        """
+        for name, module in self.global_model.named_modules():
+            if isinstance(module, torch.nn.Linear) or isinstance(module, torch.nn.Conv2d):
+                prune.remove(module, 'weight')
+                print(f"Removed pruning reparameterization for {name}")
+        print("After removing reparameterization:")
+        print("Conv1 weight shape:", self.global_model.base.conv1[0].weight.shape)
+        print("Conv2 weight shape:", self.global_model.base.conv2[0].weight.shape)
+        print("FC1 weight shape:", self.global_model.base.fc1[0].weight.shape)
+        print("Head weight shape:", self.global_model.head.weight.shape)
+
+    def get_sparsity(self, module):
+        """
+        Calculate the sparsity of a given module.
+        Args:
+            module: The module to check sparsity for.
+        """
+        if hasattr(module, 'weight'):
+            return float(torch.sum(module.weight == 0) / module.weight.numel())
+        return 0.0
 
     def test_metrics(self):
         if self.eval_new_clients and self.num_new_clients > 0:

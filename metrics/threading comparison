@@ -1,0 +1,4 @@
+,FedDyn,FedDynThread,MOON,MOONThread
+averaged_time_per_iteration,2.873513550758362,2.5602220582962034,4.160751399993896,3.7421494770050048
+used_memory_mb,184.36,184.36,139.97,139.97
+total_time_cost_seconds,147.69,131.66,213.41,191.88

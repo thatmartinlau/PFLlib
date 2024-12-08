@@ -65,6 +65,11 @@ from flcore.servers.servercac import FedCAC
 from flcore.servers.serverda import PFL_DA
 from flcore.servers.serverlc import FedLC
 
+#Additions
+from flcore.servers.serverdyn_thread import FedDynThread
+from flcore.servers.servermoon_thread import MOONThread
+from flcore.servers.serveravg_pruned import PrunedFedAvg
+
 from flcore.trainmodel.models import *
 
 from flcore.trainmodel.bilstm import *
@@ -115,6 +120,28 @@ def run(args):
                 args.model = Digit5CNN().to(args.device)
             else:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=10816).to(args.device)
+
+        elif model_str == "VGG11":  # or VGG13, VGG19
+            args.model = VGG('VGG11').to(args.device)
+
+        elif model_str == "CNNPruned": # non-convex
+            if "MNIST" in args.dataset:
+                args.model = PrunedFedAvgCNN(in_features=1, num_classes=args.num_classes, dim=1024).to(args.device)
+            elif "Cifar10" in args.dataset:
+                args.model = PrunedFedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
+            elif "Omniglot" in args.dataset:
+                args.model = PrunedFedAvgCNN(in_features=1, num_classes=args.num_classes, dim=33856).to(args.device)
+                # args.model = CifarNet(num_classes=args.num_classes).to(args.device)
+            elif "Digit5" in args.dataset:
+                args.model = Digit5CNN().to(args.device)
+            else:
+                args.model = PrunedFedAvgCNN(in_features=3, num_classes=args.num_classes, dim=10816).to(args.device)
+
+        elif model_str == "LeNet":
+            args.model = LeNet(num_classes=args.num_classes).to(args.device)
+
+        elif model_str == "LeNetCifar":
+            args.model = LeNet_Cifar(num_classes=args.num_classes).to(args.device)
 
         elif model_str == "DNN": # non-convex
             if "MNIST" in args.dataset:
@@ -204,6 +231,12 @@ def run(args):
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedAvg(args, i)
 
+        elif args.algorithm == "FedAvgPruned":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
+            server = PrunedFedAvg(args, i)
+
         elif args.algorithm == "Local":
             server = Local(args, i)
 
@@ -267,11 +300,20 @@ def run(args):
         elif args.algorithm == "FedDyn":
             server = FedDyn(args, i)
 
+        elif args.algorithm == "FedDynThread":
+            server = FedDynThread(args, i)
+
         elif args.algorithm == "MOON":
             args.head = copy.deepcopy(args.model.fc)
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
             server = MOON(args, i)
+
+        elif args.algorithm == "MOONThread":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
+            server = MOONThread(args, i)
 
         elif args.algorithm == "FedBABU":
             args.head = copy.deepcopy(args.model.fc)
@@ -487,7 +529,7 @@ if __name__ == "__main__":
     # FedALA
     parser.add_argument('-et', "--eta", type=float, default=1.0)
     parser.add_argument('-s', "--rand_percent", type=int, default=80)
-    parser.add_argument('-p', "--layer_idx", type=int, default=2,
+    parser.add_argument('-p', "--layer_idx", type=int, default=2,  
                         help="More fine-graind than its original paper.")
     # FedKD
     parser.add_argument('-mlr', "--mentee_learning_rate", type=float, default=0.005)
@@ -496,6 +538,14 @@ if __name__ == "__main__":
     # FedDBE
     parser.add_argument('-mo', "--momentum", type=float, default=0.1)
     parser.add_argument('-klw', "--kl_weight", type=float, default=0.0)
+
+    parser.add_argument('-pr', "--pruning_ratio", type=float, default=0.5,
+                    help="Ratio of weights to prune (0-1)")
+    parser.add_argument('-pm', "--pruning_method", type=str, default="magnitude",
+                        choices=["magnitude", "random", "structured"],
+                        help="Method of pruning to use")
+    parser.add_argument('-pf', "--pruning_frequency", type=int, default=1,
+                    help="Apply pruning every N rounds (1 = every round, 2 = every other round, etc.)")
 
 
     args = parser.parse_args()
@@ -518,9 +568,9 @@ if __name__ == "__main__":
     #     profile_memory=True, 
     #     on_trace_ready=torch.profiler.tensorboard_trace_handler('./log')
     #     ) as prof:
-    # with torch.autograd.profiler.profile(profile_memory=True) as prof:
+    #     #with torch.autograd.profiler.profile(profile_memory=True) as prof:
     run(args)
 
     
     # print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=20))
-    # print(f"\nTotal time cost: {round(time.time()-total_start, 2)}s.")
+    print(f"\nTotal time cost: {round(time.time()-total_start, 2)}s.")
